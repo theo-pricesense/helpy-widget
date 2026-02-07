@@ -7,13 +7,30 @@ export interface CustomerInfo {
   metadata?: Record<string, unknown>;
 }
 
+export interface PreChatFormConfig {
+  enabled: boolean;
+  title?: string;
+  subtitle?: string;
+  fields?: {
+    email?: { enabled: boolean; required?: boolean; placeholder?: string };
+    name?: { enabled: boolean; required?: boolean; placeholder?: string };
+  };
+  submitText?: string;
+}
+
 export interface HelpyConfig {
   projectId: string;
   apiKey: string;
   apiUrl?: string;
 
+  // Locale (default: 'ko')
+  locale?: "ko" | "en" | "ja" | "zh";
+
   // Customer identification (optional)
   customer?: CustomerInfo;
+
+  // Pre-chat form (collect email/name before chat)
+  preChatForm?: PreChatFormConfig;
 
   // UI customization
   position?: "bottom-left" | "bottom-right";

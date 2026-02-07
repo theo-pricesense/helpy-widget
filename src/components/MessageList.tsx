@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "preact/hooks";
+import type { Translations } from "../locales";
 import type { Message } from "../types";
 
 interface MessageListProps {
   messages: Message[];
   isLoading: boolean;
   streamingContent: string;
+  translations: Translations;
   primaryColor: string;
 }
 
@@ -12,6 +14,7 @@ export function MessageList({
   messages,
   isLoading,
   streamingContent,
+  translations: t,
   primaryColor,
 }: MessageListProps) {
   const listRef = useRef<HTMLDivElement>(null);
@@ -21,6 +24,12 @@ export function MessageList({
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [messages, streamingContent]);
+
+  const getBadgeText = (role: string) => {
+    if (role === "AI") return t.aiBadge;
+    if (role === "AGENT") return t.agentBadge;
+    return role;
+  };
 
   return (
     <div class="helpy-messages" ref={listRef}>
@@ -35,9 +44,7 @@ export function MessageList({
           }
         >
           {message.role !== "USER" && (
-            <span class="helpy-message-badge">
-              {message.role === "AI" ? "AI" : "Agent"}
-            </span>
+            <span class="helpy-message-badge">{getBadgeText(message.role)}</span>
           )}
           <p>{message.content}</p>
           <span class="helpy-message-time">
@@ -52,7 +59,7 @@ export function MessageList({
       {/* Streaming AI response */}
       {streamingContent && (
         <div class="helpy-message helpy-message-ai helpy-message-streaming">
-          <span class="helpy-message-badge">AI</span>
+          <span class="helpy-message-badge">{t.aiBadge}</span>
           <p>
             {streamingContent}
             <span class="helpy-cursor" />

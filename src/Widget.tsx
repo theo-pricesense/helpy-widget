@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import { HelpyApi } from "./api";
 import { ChatBubble } from "./components/ChatBubble";
 import { ChatWindow } from "./components/ChatWindow";
-import type { HelpyConfig, Message, WidgetState } from "./types";
+import { PreChatForm } from "./components/PreChatForm";
+import { getTranslations } from "./locales";
+import type { CustomerInfo, HelpyConfig, Message, WidgetState } from "./types";
 
 interface WidgetProps {
   config: HelpyConfig;
@@ -10,6 +12,7 @@ interface WidgetProps {
 
 const SESSION_KEY = "helpy_session_id";
 const CONVERSATION_KEY = "helpy_conversation_id";
+const CUSTOMER_KEY = "helpy_customer";
 
 function getSessionId(): string {
   let sessionId = localStorage.getItem(SESSION_KEY);
@@ -20,6 +23,15 @@ function getSessionId(): string {
   return sessionId;
 }
 
+function getSavedCustomer(): Partial<CustomerInfo> | null {
+  try {
+    const saved = localStorage.getItem(CUSTOMER_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function Widget({ config }: WidgetProps) {
   const [state, setState] = useState<WidgetState>("closed");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -28,15 +40,26 @@ export function Widget({ config }: WidgetProps) {
   const [conversationId, setConversationId] = useState<string | null>(
     localStorage.getItem(CONVERSATION_KEY)
   );
+  const [collectedCustomer, setCollectedCustomer] = useState<Partial<CustomerInfo> | null>(
+    getSavedCustomer()
+  );
   const [api] = useState(
     () => new HelpyApi(config.projectId, config.apiKey, config.apiUrl)
   );
 
+  const translations = useMemo(
+    () => getTranslations(config.locale || "ko"),
+    [config.locale]
+  );
   const primaryColor = config.primaryColor || "#0891b2";
-  const welcomeMessage =
-    config.welcomeMessage || "Hi! How can I help you today?";
-  const placeholder = config.placeholder || "Type a message...";
   const position = config.position || "bottom-right";
+
+  // Check if we need to show pre-chat form
+  const needsPreChatForm =
+    config.preChatForm?.enabled &&
+    !config.customer && // Not already identified by parent site
+    !collectedCustomer && // Not already collected
+    !conversationId; // No existing conversation
 
   // Load existing messages if conversation exists
   useEffect(() => {
@@ -54,11 +77,23 @@ export function Widget({ config }: WidgetProps) {
 
   const startConversation = useCallback(async () => {
     try {
-      const result = await api.startConversation(
-        config.customer
-          ? { customer: config.customer }
-          : { sessionId: getSessionId() }
-      );
+      // Priority: config.customer > collectedCustomer > sessionId
+      let params: { customer?: CustomerInfo; sessionId?: string };
+
+      if (config.customer) {
+        params = { customer: config.customer };
+      } else if (collectedCustomer) {
+        params = {
+          customer: {
+            id: collectedCustomer.email || getSessionId(),
+            ...collectedCustomer,
+          } as CustomerInfo,
+        };
+      } else {
+        params = { sessionId: getSessionId() };
+      }
+
+      const result = await api.startConversation(params);
       setConversationId(result.conversation.id);
       localStorage.setItem(CONVERSATION_KEY, result.conversation.id);
       if (result.welcomeMessage) {
@@ -69,7 +104,12 @@ export function Widget({ config }: WidgetProps) {
       console.error("Failed to start conversation:", error);
       return null;
     }
-  }, [api, config.customer]);
+  }, [api, config.customer, collectedCustomer]);
+
+  const handlePreChatSubmit = useCallback((customer: Partial<CustomerInfo>) => {
+    setCollectedCustomer(customer);
+    localStorage.setItem(CUSTOMER_KEY, JSON.stringify(customer));
+  }, []);
 
   const handleSend = useCallback(
     async (content: string) => {
@@ -133,15 +173,25 @@ export function Widget({ config }: WidgetProps) {
       class={`helpy-container helpy-${position}`}
       style={{ zIndex: config.zIndex || 9999 }}
     >
-      {state === "open" && (
+      {state === "open" && needsPreChatForm && (
+        <PreChatForm
+          config={config.preChatForm!}
+          translations={translations}
+          primaryColor={primaryColor}
+          onSubmit={handlePreChatSubmit}
+          onClose={closeWidget}
+        />
+      )}
+      {state === "open" && !needsPreChatForm && (
         <ChatWindow
           messages={messages}
           isLoading={isLoading}
           streamingContent={streamingContent}
+          translations={translations}
           onSend={handleSend}
           onClose={closeWidget}
-          welcomeMessage={welcomeMessage}
-          placeholder={placeholder}
+          welcomeMessage={config.welcomeMessage}
+          placeholder={config.placeholder}
           primaryColor={primaryColor}
         />
       )}

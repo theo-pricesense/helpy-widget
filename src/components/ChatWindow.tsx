@@ -1,3 +1,4 @@
+import type { Translations } from "../locales";
 import type { Message } from "../types";
 import { MessageInput } from "./MessageInput";
 import { MessageList } from "./MessageList";
@@ -6,10 +7,11 @@ interface ChatWindowProps {
   messages: Message[];
   isLoading: boolean;
   streamingContent: string;
+  translations: Translations;
   onSend: (message: string) => void;
   onClose: () => void;
-  welcomeMessage: string;
-  placeholder: string;
+  welcomeMessage?: string;
+  placeholder?: string;
   primaryColor: string;
 }
 
@@ -17,6 +19,7 @@ export function ChatWindow({
   messages,
   isLoading,
   streamingContent,
+  translations: t,
   onSend,
   onClose,
   welcomeMessage,
@@ -43,8 +46,8 @@ export function ChatWindow({
             </svg>
           </div>
           <div>
-            <h3 class="helpy-header-title">Helpy AI</h3>
-            <p class="helpy-header-subtitle">Always here to help</p>
+            <h3 class="helpy-header-title">{t.headerTitle}</h3>
+            <p class="helpy-header-subtitle">{t.headerSubtitle}</p>
           </div>
         </div>
         <button
@@ -69,20 +72,21 @@ export function ChatWindow({
       <div class="helpy-body">
         {messages.length === 0 && !isLoading && !streamingContent && (
           <div class="helpy-welcome">
-            <p>{welcomeMessage}</p>
+            <p>{welcomeMessage || t.welcomeMessage}</p>
           </div>
         )}
         <MessageList
           messages={messages}
           isLoading={isLoading}
           streamingContent={streamingContent}
+          translations={t}
           primaryColor={primaryColor}
         />
       </div>
 
       <MessageInput
         onSend={onSend}
-        placeholder={placeholder}
+        placeholder={placeholder || t.placeholder}
         disabled={isLoading}
         primaryColor={primaryColor}
       />
