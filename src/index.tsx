@@ -4,7 +4,7 @@ import type { HelpyConfig } from "./types";
 import { Widget } from "./Widget";
 
 // Re-export types
-export type { HelpyConfig, Message, Conversation } from "./types";
+export type { HelpyConfig, CustomerInfo, Message, Conversation } from "./types";
 
 let containerElement: HTMLElement | null = null;
 let currentConfig: HelpyConfig | null = null;

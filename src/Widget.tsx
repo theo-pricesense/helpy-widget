@@ -54,8 +54,11 @@ export function Widget({ config }: WidgetProps) {
 
   const startConversation = useCallback(async () => {
     try {
-      const sessionId = getSessionId();
-      const result = await api.startConversation(sessionId);
+      const result = await api.startConversation(
+        config.customer
+          ? { customer: config.customer }
+          : { sessionId: getSessionId() }
+      );
       setConversationId(result.conversation.id);
       localStorage.setItem(CONVERSATION_KEY, result.conversation.id);
       if (result.welcomeMessage) {
@@ -66,7 +69,7 @@ export function Widget({ config }: WidgetProps) {
       console.error("Failed to start conversation:", error);
       return null;
     }
-  }, [api]);
+  }, [api, config.customer]);
 
   const handleSend = useCallback(
     async (content: string) => {

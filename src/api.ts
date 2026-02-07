@@ -1,5 +1,6 @@
 import type {
   Conversation,
+  CustomerInfo,
   Message,
   StartConversationResponse,
 } from "./types";
@@ -11,6 +12,11 @@ export interface StreamCallbacks {
   onToken?: (token: string, fullContent: string) => void;
   onComplete?: (aiMessage: Message) => void;
   onError?: (error: Error) => void;
+}
+
+export interface StartConversationParams {
+  sessionId?: string;
+  customer?: CustomerInfo;
 }
 
 export class HelpyApi {
@@ -47,15 +53,29 @@ export class HelpyApi {
     return response.json();
   }
 
+  /**
+   * Start a new conversation
+   * - Anonymous: pass sessionId (auto-generated from localStorage)
+   * - Logged-in: pass customer info
+   */
   async startConversation(
-    sessionId: string
+    params: StartConversationParams
   ): Promise<StartConversationResponse> {
+    const body: Record<string, unknown> = {
+      projectId: this.projectId,
+    };
+
+    if (params.customer) {
+      // Logged-in user
+      body.customer = params.customer;
+    } else if (params.sessionId) {
+      // Anonymous visitor
+      body.sessionId = params.sessionId;
+    }
+
     return this.request<StartConversationResponse>("/widget/conversations", {
       method: "POST",
-      body: JSON.stringify({
-        projectId: this.projectId,
-        sessionId,
-      }),
+      body: JSON.stringify(body),
     });
   }
 

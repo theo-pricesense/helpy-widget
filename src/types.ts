@@ -1,7 +1,21 @@
+export interface CustomerInfo {
+  id: string;
+  email?: string;
+  name?: string;
+  phone?: string;
+  avatarUrl?: string;
+  metadata?: Record<string, unknown>;
+}
+
 export interface HelpyConfig {
   projectId: string;
   apiKey: string;
   apiUrl?: string;
+
+  // Customer identification (optional)
+  customer?: CustomerInfo;
+
+  // UI customization
   position?: "bottom-left" | "bottom-right";
   theme?: "light" | "dark" | "auto";
   primaryColor?: string;
@@ -21,7 +35,8 @@ export interface Message {
 export interface Conversation {
   id: string;
   projectId: string;
-  sessionId: string;
+  sessionId?: string;
+  customerId?: string;
   status: "ACTIVE" | "CLOSED";
   createdAt: string;
   updatedAt: string;
