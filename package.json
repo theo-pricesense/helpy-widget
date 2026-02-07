@@ -1,0 +1,51 @@
+{
+  "name": "@helpy/widget",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Helpy AI Customer Service Chat Widget",
+  "main": "./dist/helpy-widget.umd.cjs",
+  "module": "./dist/helpy-widget.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/helpy-widget.js",
+      "require": "./dist/helpy-widget.umd.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:watch": "vite build --watch",
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "helpy",
+    "chat",
+    "widget",
+    "customer-service",
+    "ai",
+    "chatbot"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "preact": "^10.27.2"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.2",
+    "@types/node": "^24.10.1",
+    "terser": "^5.46.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.4",
+    "vite-plugin-css-injected-by-js": "^3.5.2"
+  }
+}

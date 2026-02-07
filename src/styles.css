@@ -1,0 +1,333 @@
+/* Helpy Widget Styles */
+/* Scoped to prevent conflicts with host page */
+
+#helpy-widget-container {
+  --helpy-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  --helpy-bg: #ffffff;
+  --helpy-bg-secondary: #f3f4f6;
+  --helpy-text: #111827;
+  --helpy-text-secondary: #6b7280;
+  --helpy-border: #e5e7eb;
+  --helpy-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --helpy-radius: 12px;
+
+  font-family: var(--helpy-font);
+  font-size: 14px;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+#helpy-widget-container[data-theme="dark"] {
+  --helpy-bg: #1f2937;
+  --helpy-bg-secondary: #374151;
+  --helpy-text: #f9fafb;
+  --helpy-text-secondary: #9ca3af;
+  --helpy-border: #4b5563;
+  --helpy-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}
+
+#helpy-widget-container *,
+#helpy-widget-container *::before,
+#helpy-widget-container *::after {
+  box-sizing: border-box;
+}
+
+/* Container positioning */
+.helpy-container {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.helpy-bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+.helpy-bottom-left {
+  bottom: 20px;
+  left: 20px;
+  align-items: flex-start;
+}
+
+/* Chat bubble button */
+.helpy-bubble {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: var(--helpy-shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.helpy-bubble:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.15);
+}
+
+.helpy-bubble:active {
+  transform: scale(0.95);
+}
+
+/* Chat window */
+.helpy-window {
+  width: 380px;
+  height: 520px;
+  background: var(--helpy-bg);
+  border-radius: var(--helpy-radius);
+  box-shadow: var(--helpy-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: helpy-slide-up 0.3s ease;
+}
+
+@keyframes helpy-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 420px) {
+  .helpy-window {
+    width: calc(100vw - 40px);
+    height: calc(100vh - 100px);
+    max-height: 600px;
+  }
+}
+
+/* Header */
+.helpy-header {
+  padding: 16px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.helpy-header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.helpy-header-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.helpy-header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.helpy-header-subtitle {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.helpy-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.helpy-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Body */
+.helpy-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.helpy-welcome {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--helpy-text-secondary);
+}
+
+.helpy-welcome p {
+  margin: 0;
+}
+
+/* Messages */
+.helpy-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.helpy-message {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  position: relative;
+}
+
+.helpy-message p {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.helpy-message-user {
+  align-self: flex-end;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.helpy-message-ai,
+.helpy-message-agent {
+  align-self: flex-start;
+  background: var(--helpy-bg-secondary);
+  color: var(--helpy-text);
+  border-bottom-left-radius: 4px;
+}
+
+.helpy-message-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--helpy-text-secondary);
+  margin-bottom: 4px;
+}
+
+.helpy-message-time {
+  display: block;
+  font-size: 10px;
+  color: inherit;
+  opacity: 0.7;
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* Typing indicator */
+.helpy-typing {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.helpy-typing span {
+  width: 8px;
+  height: 8px;
+  background: var(--helpy-text-secondary);
+  border-radius: 50%;
+  animation: helpy-typing 1.4s infinite ease-in-out both;
+}
+
+.helpy-typing span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.helpy-typing span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes helpy-typing {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Input */
+.helpy-input-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--helpy-border);
+  background: var(--helpy-bg);
+}
+
+.helpy-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--helpy-border);
+  border-radius: 20px;
+  background: var(--helpy-bg);
+  color: var(--helpy-text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.helpy-input:focus {
+  border-color: #0891b2;
+}
+
+.helpy-input::placeholder {
+  color: var(--helpy-text-secondary);
+}
+
+.helpy-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.helpy-send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.helpy-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.helpy-send-btn:not(:disabled):hover {
+  transform: scale(1.05);
+}
+
+.helpy-send-btn:not(:disabled):active {
+  transform: scale(0.95);
+}
