@@ -4,12 +4,14 @@ import type { Message } from "../types";
 interface MessageListProps {
   messages: Message[];
   isLoading: boolean;
+  streamingContent: string;
   primaryColor: string;
 }
 
 export function MessageList({
   messages,
   isLoading,
+  streamingContent,
   primaryColor,
 }: MessageListProps) {
   const listRef = useRef<HTMLDivElement>(null);
@@ -18,7 +20,7 @@ export function MessageList({
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, streamingContent]);
 
   return (
     <div class="helpy-messages" ref={listRef}>
@@ -46,7 +48,20 @@ export function MessageList({
           </span>
         </div>
       ))}
-      {isLoading && (
+
+      {/* Streaming AI response */}
+      {streamingContent && (
+        <div class="helpy-message helpy-message-ai helpy-message-streaming">
+          <span class="helpy-message-badge">AI</span>
+          <p>
+            {streamingContent}
+            <span class="helpy-cursor" />
+          </p>
+        </div>
+      )}
+
+      {/* Loading indicator (before streaming starts) */}
+      {isLoading && !streamingContent && (
         <div class="helpy-message helpy-message-ai">
           <div class="helpy-typing">
             <span />

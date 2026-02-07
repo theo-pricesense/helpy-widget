@@ -24,6 +24,7 @@ export function Widget({ config }: WidgetProps) {
   const [state, setState] = useState<WidgetState>("closed");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingContent, setStreamingContent] = useState<string>("");
   const [conversationId, setConversationId] = useState<string | null>(
     localStorage.getItem(CONVERSATION_KEY)
   );
@@ -77,35 +78,27 @@ export function Widget({ config }: WidgetProps) {
         if (!currentConversationId) return;
       }
 
-      // Optimistic update - add user message
-      const tempUserMessage: Message = {
-        id: `temp_${Date.now()}`,
-        conversationId: currentConversationId,
-        role: "USER",
-        content,
-        createdAt: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, tempUserMessage]);
       setIsLoading(true);
+      setStreamingContent("");
 
-      try {
-        const response = await api.sendMessage(currentConversationId, content);
-
-        // Replace temp message with real ones
-        setMessages((prev) => [
-          ...prev.filter((m) => m.id !== tempUserMessage.id),
-          response.userMessage,
-          response.aiMessage,
-        ]);
-      } catch (error) {
-        console.error("Failed to send message:", error);
-        // Remove temp message on error
-        setMessages((prev) =>
-          prev.filter((m) => m.id !== tempUserMessage.id)
-        );
-      } finally {
-        setIsLoading(false);
-      }
+      await api.sendMessageStream(currentConversationId, content, {
+        onStart: (userMessage) => {
+          setMessages((prev) => [...prev, userMessage]);
+        },
+        onToken: (_token, fullContent) => {
+          setStreamingContent(fullContent);
+        },
+        onComplete: (aiMessage) => {
+          setMessages((prev) => [...prev, aiMessage]);
+          setStreamingContent("");
+          setIsLoading(false);
+        },
+        onError: (error) => {
+          console.error("Stream error:", error);
+          setStreamingContent("");
+          setIsLoading(false);
+        },
+      });
     },
     [conversationId, api, startConversation]
   );
@@ -141,6 +134,7 @@ export function Widget({ config }: WidgetProps) {
         <ChatWindow
           messages={messages}
           isLoading={isLoading}
+          streamingContent={streamingContent}
           onSend={handleSend}
           onClose={closeWidget}
           welcomeMessage={welcomeMessage}

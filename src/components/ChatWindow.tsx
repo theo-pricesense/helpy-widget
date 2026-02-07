@@ -5,6 +5,7 @@ import { MessageList } from "./MessageList";
 interface ChatWindowProps {
   messages: Message[];
   isLoading: boolean;
+  streamingContent: string;
   onSend: (message: string) => void;
   onClose: () => void;
   welcomeMessage: string;
@@ -15,6 +16,7 @@ interface ChatWindowProps {
 export function ChatWindow({
   messages,
   isLoading,
+  streamingContent,
   onSend,
   onClose,
   welcomeMessage,
@@ -65,7 +67,7 @@ export function ChatWindow({
       </div>
 
       <div class="helpy-body">
-        {messages.length === 0 && !isLoading && (
+        {messages.length === 0 && !isLoading && !streamingContent && (
           <div class="helpy-welcome">
             <p>{welcomeMessage}</p>
           </div>
@@ -73,6 +75,7 @@ export function ChatWindow({
         <MessageList
           messages={messages}
           isLoading={isLoading}
+          streamingContent={streamingContent}
           primaryColor={primaryColor}
         />
       </div>
