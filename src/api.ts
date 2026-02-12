@@ -191,4 +191,16 @@ export class HelpyApi {
       `/widget/conversations/${conversationId}`
     );
   }
+
+  /**
+   * Request a human agent to join the conversation
+   */
+  async requestAgent(conversationId: string): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(
+      `/widget/conversations/${conversationId}/request-agent`,
+      {
+        method: "POST",
+      }
+    );
+  }
 }

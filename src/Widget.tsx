@@ -40,6 +40,8 @@ export function Widget({ config }: WidgetProps) {
   const [conversationId, setConversationId] = useState<string | null>(
     localStorage.getItem(CONVERSATION_KEY)
   );
+  const [isRequestingAgent, setIsRequestingAgent] = useState(false);
+  const [agentRequested, setAgentRequested] = useState(false);
   const [collectedCustomer, setCollectedCustomer] = useState<Partial<CustomerInfo> | null>(
     getSavedCustomer()
   );
@@ -146,6 +148,20 @@ export function Widget({ config }: WidgetProps) {
     [conversationId, api, startConversation]
   );
 
+  const handleRequestAgent = useCallback(async () => {
+    if (!conversationId || isRequestingAgent || agentRequested) return;
+
+    setIsRequestingAgent(true);
+    try {
+      await api.requestAgent(conversationId);
+      setAgentRequested(true);
+    } catch (error) {
+      console.error("Failed to request agent:", error);
+    } finally {
+      setIsRequestingAgent(false);
+    }
+  }, [conversationId, api, isRequestingAgent, agentRequested]);
+
   const toggleWidget = useCallback(() => {
     setState((prev) => (prev === "open" ? "closed" : "open"));
   }, []);
@@ -190,6 +206,9 @@ export function Widget({ config }: WidgetProps) {
           translations={translations}
           onSend={handleSend}
           onClose={closeWidget}
+          onRequestAgent={handleRequestAgent}
+          isRequestingAgent={isRequestingAgent}
+          agentRequested={agentRequested}
           welcomeMessage={config.welcomeMessage}
           placeholder={config.placeholder}
           primaryColor={primaryColor}

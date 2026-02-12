@@ -27,6 +27,11 @@ export interface Translations {
   // Badges
   aiBadge: string;
   agentBadge: string;
+
+  // Request agent
+  requestAgent: string;
+  requestAgentPending: string;
+  requestAgentSuccess: string;
 }
 
 const ko: Translations = {
@@ -51,6 +56,10 @@ const ko: Translations = {
 
   aiBadge: "AI",
   agentBadge: "상담사",
+
+  requestAgent: "상담원 연결",
+  requestAgentPending: "상담원 연결 중...",
+  requestAgentSuccess: "상담원 연결을 요청했습니다",
 };
 
 const en: Translations = {
@@ -75,6 +84,10 @@ const en: Translations = {
 
   aiBadge: "AI",
   agentBadge: "Agent",
+
+  requestAgent: "Talk to agent",
+  requestAgentPending: "Connecting...",
+  requestAgentSuccess: "Agent requested",
 };
 
 const ja: Translations = {
@@ -99,6 +112,10 @@ const ja: Translations = {
 
   aiBadge: "AI",
   agentBadge: "担当者",
+
+  requestAgent: "Talk to agent",
+  requestAgentPending: "Connecting...",
+  requestAgentSuccess: "Agent requested",
 };
 
 const zh: Translations = {
@@ -123,6 +140,10 @@ const zh: Translations = {
 
   aiBadge: "AI",
   agentBadge: "客服",
+
+  requestAgent: "Talk to agent",
+  requestAgentPending: "Connecting...",
+  requestAgentSuccess: "Agent requested",
 };
 
 const locales: Record<Locale, Translations> = {

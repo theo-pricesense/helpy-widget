@@ -10,6 +10,9 @@ interface ChatWindowProps {
   translations: Translations;
   onSend: (message: string) => void;
   onClose: () => void;
+  onRequestAgent: () => void;
+  isRequestingAgent: boolean;
+  agentRequested: boolean;
   welcomeMessage?: string;
   placeholder?: string;
   primaryColor: string;
@@ -22,6 +25,9 @@ export function ChatWindow({
   translations: t,
   onSend,
   onClose,
+  onRequestAgent,
+  isRequestingAgent,
+  agentRequested,
   welcomeMessage,
   placeholder,
   primaryColor,
@@ -83,6 +89,44 @@ export function ChatWindow({
           primaryColor={primaryColor}
         />
       </div>
+
+      {!agentRequested && (
+        <button
+          type="button"
+          class="helpy-request-agent-btn"
+          onClick={onRequestAgent}
+          disabled={isRequestingAgent || isLoading}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          {isRequestingAgent ? t.requestAgentPending : t.requestAgent}
+        </button>
+      )}
+
+      {agentRequested && (
+        <div class="helpy-request-agent-success">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+          {t.requestAgentSuccess}
+        </div>
+      )}
 
       <MessageInput
         onSend={onSend}
